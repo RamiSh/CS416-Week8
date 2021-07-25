@@ -1,0 +1,62 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style>
+    circle {
+        fill: lightblue;
+        stroke: black;
+    }
+</style>
+
+<body onload='init()'>
+    <svg width=300 height=300>
+    </svg>
+    <script>
+        async function init() {
+            // load data
+            const data = await d3.csv('https://flunky.github.io/cars2017.csv');
+            console.log(data);
+            // unnecessary code - I was overthinking it
+            /*const avrgCity = data.map(a => parseInt(a.AverageCityMPG));
+            const maxAvgCity = Math.max.apply(Math, avrgCity);
+            const minAvgCity = Math.min.apply(Math, avrgCity);
+            console.log(avrgCity);
+            console.log(maxAvgCity);
+            console.log(minAvgCity);
+
+            const avrgHW = data.map(a => parseInt(a.AverageHighwayMPG));
+            const maxAvgHW = Math.max.apply(Math, avrgHW);
+            const minAvgHW = Math.min.apply(Math, avrgHW);
+            console.log(avrgHW);
+            console.log(maxAvgHW);
+            console.log(minAvgHW);*/
+
+            // prep for visuals
+            const margin = 50;
+            const height = 200;
+            const width = 200;
+            const y = d3.scaleLog().base(2).domain([10, 150]).range([height, 0]);
+            const x = d3.scaleLog().base(2).domain([10, 150]).range([0, width]);
+            const cx = d3.scaleLog().domain([10, 150]).range([0, width]);
+            const cy = d3.scaleLog().domain([10, 150]).range([height, 0]);
+
+            d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(" + margin + "," + margin + ")")
+                .selectAll('circle')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('cx', (d, i) => cx(parseInt(d.AverageCityMPG)))
+                .attr('cy', (d, i) => cy(parseInt(d.AverageHighwayMPG)))
+                .attr('r', (d, i) => parseInt(d.EngineCylinders) + 2);
+            d3.select("svg").append("g")
+                .attr("transform", "translate(" + margin + "," + margin + ")")
+                .call(d3.axisLeft(y).tickValues([10, 20, 50, 100]));
+            d3.select("svg").append("g")
+                .attr("transform", "translate(" + margin + "," + (height + margin) + ")")
+                .call(d3.axisBottom(x).tickValues([10, 20, 50, 100]));
+        }
+    </script>
+</body>
+
+</html>
